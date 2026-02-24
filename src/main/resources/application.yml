@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: testex
+  main:
+    web-application-type: none
+    banner-mode: "off"
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/testex}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: postgres
+  flyway:
+    enabled: true
+    schemas: ${DB_SCHEMA:public}
+
+app:
+  xml-url: ${XML_URL:https://expro.ru/bitrix/catalog_export/export_Sai.xml}
+  schema: ${DB_SCHEMA:public}
+  xml-parser:
+    features:
+      - uri: "http://apache.org/xml/features/disallow-doctype-decl"
+        enabled: true
+      - uri: "http://xml.org/sax/features/external-general-entities"
+        enabled: false
+      - uri: "http://xml.org/sax/features/external-parameter-entities"
+        enabled: false

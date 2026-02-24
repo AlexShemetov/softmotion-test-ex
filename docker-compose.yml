@@ -1,0 +1,39 @@
+services:
+  db:
+    image: public.ecr.aws/docker/library/postgres:16
+    container_name: testex-db
+    environment:
+      POSTGRES_DB: testex
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d testex"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    image: ghcr.io/carlossg/maven:3.9.9-eclipse-temurin-21
+    container_name: testex-app
+    working_dir: /workspace
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/testex
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SCHEMA: public
+    volumes:
+      - ./:/workspace
+      - maven_cache:/root/.m2
+    command: >
+      sh -c "mvn -q -DskipTests spring-boot:run -Dspring-boot.run.arguments=update"
+
+volumes:
+  postgres_data:
+  maven_cache:
